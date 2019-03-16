@@ -6,18 +6,15 @@
 package compilers.lab.pkg1;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import static java.lang.Character.isDigit;
 import java.util.ArrayList;
 
 /**
  *
  * @author ahmedalsai
  */
-public class CompilersLab1 {
-
+public class Scanner {
     public static ArrayList<String> reserved = new ArrayList<String>();
     public static ArrayList<String> singleCharSpecial = new ArrayList<String>();
     public static ArrayList<String> multipleCharSpecialsStartChar = new ArrayList<String>();
@@ -25,13 +22,18 @@ public class CompilersLab1 {
     public static State currentState = State.START;
     public static String rubbish = "";
     public static int currentLine = 1;
+    public static ArrayList<Token> tokenList;
     enum State {
         START, INNUM, INID, INASSIGN, INCOMMENT, DONE
     }
-    
+    class UnknownToken extends Exception{
+        public UnknownToken (String str){
+            super(str);
+        }
+    }
     
 
-    public static void main(String[] args) {
+    public static ArrayList<Token> getTokens() {
         try {
             init();
             File file = new File("/Users/ahmedalsai/Desktop/code.txt");
@@ -46,18 +48,15 @@ public class CompilersLab1 {
                     //takeComment(fr);
                 } else if (((char) CurrentCharASCII) == ':') {
                     currentState = State.INASSIGN;
-//                    seeIfMultipleCharSpecial((char) CurrentCharASCII, fr);
                 } else if (Character.isLetter((char) CurrentCharASCII)) {
                     currentState = State.INID;
-//                    seeIfReservedOrIdentifier(fr);
                 } else if (Character.isDigit((char) CurrentCharASCII)) {
                     currentState = State.INNUM;
-//                    getNumber(fr);
                 } 
                 //Other symbols:
                 else {
                     if (singleCharSpecial.contains((char) CurrentCharASCII + "")) {
-                        System.out.println("Special symbol: " + (char) CurrentCharASCII);
+                        tokenList.add(new Token((char) CurrentCharASCII + "", TokenType.SPECIALSYMBOL));
                         readNext(fr);
                     }
                     else{
@@ -88,7 +87,6 @@ public class CompilersLab1 {
                             comment += (char) temp;
                         }
                         clearRubbish();
-                        System.out.println("Left curly brace: {\n" + "comment\n" + "Right curly brace: }");
                         readNext(fr);
                         currentState = State.DONE;
                       
@@ -98,7 +96,7 @@ public class CompilersLab1 {
                         readNext(fr);
                         if ((char) CurrentCharASCII == '=') {
                             clearRubbish();
-                            System.out.println("Special symbol: :=");
+                            tokenList.add(new Token(":=", TokenType.SPECIALSYMBOL));
                             readNext(fr);
                         } else{
                             addRubbish(':');
@@ -115,10 +113,10 @@ public class CompilersLab1 {
                         if (tempStr != ""){
                             if (reserved.contains(tempStr)) {
                                 clearRubbish();
-                                System.out.println("Reserved symbol: " + tempStr);
+                                tokenList.add(new Token(tempStr, TokenType.RESERVED));
                             } else {
                                 clearRubbish();
-                                System.out.println("Identifier: " + tempStr);
+                                tokenList.add(new Token(tempStr, TokenType.IDENTIFIER));
                             }
                         }
                         currentState = State.DONE;
@@ -131,7 +129,7 @@ public class CompilersLab1 {
                             tempStr += tempChar;
                         }
                         clearRubbish();
-                        System.out.println("Number: " + tempStr);
+                        tokenList.add(new Token(tempStr, TokenType.NUMBER));
                         currentState = State.DONE;
                         break;
                     }
@@ -148,7 +146,7 @@ public class CompilersLab1 {
         } catch (Exception ex) {
             System.out.println(ex);
         }
-
+        return tokenList;
     }
     
     public static void addRubbish(char c){
@@ -159,12 +157,13 @@ public class CompilersLab1 {
     
     public static void clearRubbish(){
         if (rubbish != ""){
-            System.out.println("Unknown token in line " + currentLine +  " near: '" + rubbish + "'");
+            throw new RuntimeException("Unknow token in line " + currentLine + ", near: " + rubbish);
         }
         rubbish = "";
     }
 
     private static void init() {
+        tokenList.clear();
         reserved.add("read");
         reserved.add("if");
         reserved.add("else");
