@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compilers.lab.pkg1;
+package compiler.pkg1;
 
 import java.io.File;
 import java.io.FileReader;
@@ -15,37 +15,24 @@ import java.util.ArrayList;
  * @author ahmedalsai
  */
 public class Scanner {
-    public static ArrayList<String> reserved = new ArrayList<String>();
-    public static ArrayList<String> singleCharSpecial = new ArrayList<String>();
-    public static ArrayList<String> multipleCharSpecialsStartChar = new ArrayList<String>();
-    public static int CurrentCharASCII;
-    public static State currentState = State.START;
-    public static String rubbish = "";
-    public static int currentLine = 1;
-    public static ArrayList<Token> tokenList;
+    private static ArrayList<String> reserved = new ArrayList<String>();
+    private static ArrayList<String> singleCharSpecial = new ArrayList<String>();
+    private static ArrayList<String> multipleCharSpecialsStartChar = new ArrayList<String>();
+    private static int CurrentCharASCII;
+    private static State currentState = State.START;
+    private static String rubbish = "";
+    private static int currentLine = 1;
+    private static ArrayList<Token> tokenList = new ArrayList<Token>();
     enum State {
         START, INNUM, INID, INASSIGN, INCOMMENT, DONE
     }
-    class UnknownToken extends Exception{
-        public UnknownToken (String str){
-            super(str);
-        }
-    }
-    
-
-    public static ArrayList<Token> getTokens() {
-        try {
-            init();
-            File file = new File("/Users/ahmedalsai/Desktop/code.txt");
-            FileReader fr;
-            fr = new FileReader(file);
-            readNext(fr);
+    public static ArrayList<Token> getTokens(FileReader fr) throws IOException {
+        
+            init(fr);
             while ((CurrentCharASCII) != -1) {
-
                 char currentChar = (char) CurrentCharASCII;
                 if (currentChar == '{') {
                     currentState = State.INCOMMENT;
-                    //takeComment(fr);
                 } else if (((char) CurrentCharASCII) == ':') {
                     currentState = State.INASSIGN;
                 } else if (Character.isLetter((char) CurrentCharASCII)) {
@@ -143,9 +130,7 @@ public class Scanner {
                     }
                 }
             }
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
+        
         return tokenList;
     }
     
@@ -157,13 +142,14 @@ public class Scanner {
     
     public static void clearRubbish(){
         if (rubbish != ""){
-            throw new RuntimeException("Unknow token in line " + currentLine + ", near: " + rubbish);
+            throw new RuntimeException("Unknown token in line " + currentLine + ", near: " + rubbish);
         }
         rubbish = "";
     }
 
-    private static void init() {
+    private static void init(FileReader fr) throws IOException {
         tokenList.clear();
+        readNext(fr);
         reserved.add("read");
         reserved.add("if");
         reserved.add("else");

@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compilers.lab.pkg1;
+package compiler.pkg1;
 
 enum TokenType{
-    COMMENT, SPECIALSYMBOL, NUMBER, IDENTIFIER, RESERVED
+    SPECIALSYMBOL, NUMBER, IDENTIFIER, RESERVED
 }
 public class Token {
     private String value;
@@ -16,5 +16,14 @@ public class Token {
         this.value = value;
         this.type = type;
     }
+
+    public TokenType getType() {
+        return type;
+    }
+
+    public String getValue() {
+        return value;
+    }
+    
     
 }
