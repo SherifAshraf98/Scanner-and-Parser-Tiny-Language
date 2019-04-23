@@ -38,5 +38,8 @@ public class CompilersLab1 {
         for (int i = 0; i < x.size(); i++){
             System.out.println(x.get(i).getValue());
         }
+        Parser p = new Parser(x);
+
+        
     }
 }

@@ -166,6 +166,7 @@ public class Scanner {
         singleCharSpecial.add(")");
         singleCharSpecial.add(";");
         singleCharSpecial.add("<");
+        singleCharSpecial.add("=");
         multipleCharSpecialsStartChar.add(":");
 
     }
