@@ -65,30 +65,26 @@ public class Parser {
 
     public void stmt_seq() {
 
+        statement();
+
+        while (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
+            if (match(tokenList.get(counter).getValue(), ";")) {
+                statement();
+
+            } else {
+                    System.out.println("Missing semi-colon");
+                    statement();
+            }
+
+        }
+        
+        
 //        statement();
 //        do{
 //            match(tokenList.get(counter).getValue(), ";");
 //            statement();
 //        }
 //        while(!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase(";"));
-        statement();
-
-        while (true) {
-            if (!isDone() && match(tokenList.get(counter).getValue(), ";")) {
-                statement();
-
-            } else {
-                if (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
-                    System.out.println("Missing semi-colon");
-                    statement();
-                    
-                } else {
-                    break;
-                }
-
-            }
-
-        }
 
 //        temp = statement();
 //        for (int i = counter; i < tokenList.size(); i++) {
