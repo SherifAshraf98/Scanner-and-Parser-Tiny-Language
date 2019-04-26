@@ -41,8 +41,14 @@ public class CompilersLab1 {
         }
 
         BufferedWriter bw = new BufferedWriter(new FileWriter("parser_output.txt"));
-        //bw.write("FAIIIILLLL");
-        Parser p = new Parser(x, bw);
+        TreeManager tm = new TreeManager();
+        tm.addNewElement("read", "x");  
+        tm.addNewElement("read", "y");
+        tm.addNewElement("read", "z");
+        tm.addNewElement("write", "z");
+        tm.addNewElement("write", "z");
+        tm.displayTree();
+        //Parser p = new Parser(x, bw);
 //        for (int i = 0; i < p.foundStmts.size(); i++) {
 //            System.out.println(p.foundStmts.get(i));
 //        }
