@@ -32,13 +32,17 @@ public class CompilersLab1 {
     
 
     public static void main(String[] args) throws IOException {
-        File file = new File("code.txt");
+        File file = new File("C:\\Users\\Sherif Ashraf\\Dropbox\\Semester 6\\Compilers\\Scanner-and-Parser-Tiny-Language\\code.txt");
         FileReader fr = new FileReader(file);
         ArrayList<Token> x = Scanner.getTokens(fr);
         for (int i = 0; i < x.size(); i++){
             System.out.println(x.get(i).getValue());
         }
         Parser p = new Parser(x);
+//    while((CurrentCharASCII) != -1){
+//        CurrentCharASCII = fr.read();
+//        System.out.println(CurrentCharASCII);
+//    }
 
         
     }

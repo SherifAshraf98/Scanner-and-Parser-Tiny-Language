@@ -3,10 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/ahmedalsai/NetBeansProjects/CompilersProject/src/compiler/pkg1/Scanner.java</file>
-            <file>file:/Users/ahmedalsai/NetBeansProjects/CompilersProject/src/compiler/pkg1/Parser.java</file>
-            <file>file:/Users/ahmedalsai/NetBeansProjects/CompilersProject/src/compiler/pkg1/CompilersLab1.java</file>
-            <file>file:/Users/ahmedalsai/NetBeansProjects/CompilersProject/src/compiler/pkg1/Token.java</file>
+            <file>file:/C:/Users/Sherif%20Ashraf/Dropbox/Semester%206/Compilers/Scanner-and-Parser-Tiny-Language/src/compiler/pkg1/Parser.java</file>
+            <file>file:/C:/Users/Sherif%20Ashraf/Dropbox/Semester%206/Compilers/Scanner-and-Parser-Tiny-Language/src/compiler/pkg1/Token.java</file>
+            <file>file:/C:/Users/Sherif%20Ashraf/Dropbox/Semester%206/Compilers/Scanner-and-Parser-Tiny-Language/src/compiler/pkg1/Scanner.java</file>
+            <file>file:/C:/Users/Sherif%20Ashraf/Dropbox/Semester%206/Compilers/Scanner-and-Parser-Tiny-Language/src/compiler/pkg1/CompilersLab1.java</file>
+            <file>file:/C:/Users/Sherif%20Ashraf/Dropbox/Semester%206/Compilers/Scanner-and-Parser-Tiny-Language/src/compiler/pkg1/ParseTree.java</file>
+            <file>file:/C:/Users/Sherif%20Ashraf/Dropbox/Semester%206/Compilers/Scanner-and-Parser-Tiny-Language/src/compiler/pkg1/NodeTree.java</file>
         </group>
     </open-files>
 </project-private>

@@ -30,6 +30,10 @@ public class Scanner {
         
             init(fr);
             while ((CurrentCharASCII) != -1) {
+                if(CurrentCharASCII == 13 || CurrentCharASCII == 65279){
+                    readNext(fr);
+                    continue;
+                }
                 char currentChar = (char) CurrentCharASCII;
                 if (currentChar == '{') {
                     currentState = State.INCOMMENT;
@@ -135,7 +139,7 @@ public class Scanner {
     }
     
     public static void addRubbish(char c){
-        if ((int)c != 10){
+        if ((int)c != 10 ){
         rubbish += c;
         }
     }

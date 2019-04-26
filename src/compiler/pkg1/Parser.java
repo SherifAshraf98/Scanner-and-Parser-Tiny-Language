@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class Parser {
 
     public ArrayList<Token> tokenList;
+    public ArrayList<NodeTree> nodeList;
     public int counter = 0;
     public int readCount = 0;
     public int writeCount = 0;
@@ -25,9 +26,10 @@ public class Parser {
         tokenList = x;
         program();
     }
-    public void increaseCounter(){
+
+    public void increaseCounter() {
         if (!isDone() && !tokenList.get(counter).getValue().equals(";") && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
-                    counter++;
+            counter++;
         }
     }
 
@@ -61,6 +63,8 @@ public class Parser {
         System.out.println("Assignment count: " + assignCount);
         System.out.println("If count: " + ifCount);
         System.out.println("Repeat count: " + repeatCount);
+        //ParseTree pt = new ParseTree(nodeList);
+        //pt.draw();
     }
 
     public void stmt_seq() {
@@ -72,20 +76,18 @@ public class Parser {
                 statement();
 
             } else {
-                    System.out.println("Missing semi-colon");
-                    statement();
+                System.out.println("Missing semi-colon");
+                statement();
             }
 
         }
-        
-        
+
 //        statement();
 //        do{
 //            match(tokenList.get(counter).getValue(), ";");
 //            statement();
 //        }
 //        while(!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase(";"));
-
 //        temp = statement();
 //        for (int i = counter; i < tokenList.size(); i++) {
 //            if (!isDone() && match(tokenList.get(i).getValue(), ";")){
@@ -141,9 +143,9 @@ public class Parser {
         } else {
             System.out.println("Syntax error: Expected identifier");
             if (!tokenList.get(counter).getValue().equals(";") && !tokenList.get(counter).getValue().equals("end")) {
-            increaseCounter();
-        }
-        
+                increaseCounter();
+            }
+
         }
         return false;
     }
