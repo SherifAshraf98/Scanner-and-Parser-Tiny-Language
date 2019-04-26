@@ -40,10 +40,11 @@ public class ParseTree {
 
         tree.addAttribute("ui.quality");
         tree.addAttribute("ui.antialias");
+        
         for (int i = 0; i < nodeList.size(); i++) {
             tree.addNode(nodeList.get(i).getValue());
-            
             Node n1 = tree.getNode(nodeList.get(i).getValue());
+            
             n1.addAttribute("ui.style", "shape:box;size:10px,30px;fill-color: white;size: 30px; text-alignment: center;");
             n1.addAttribute("ui.label", "Node " + nodeList.get(i).getValue());
         }
