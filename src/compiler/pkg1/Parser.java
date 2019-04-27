@@ -64,36 +64,25 @@ public class Parser {
     }
 
     public void stmt_seq() {
+//        statement();
+//        for (int i = 0; i < tokenList.size(); i++){
+//            if (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")){
+//                if (!match(tokenList.get(counter).getValue(), ";")){
+//                    System.out.println("Missing semi-colon");
+//                }
+//                statement();
+//            }
+//        }
 
         statement();
 
         while (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
-            if (match(tokenList.get(counter).getValue(), ";")) {
-                statement();
-
-            } else {
-                    System.out.println("Missing semi-colon");
-                    statement();
-            }
+            if (!match(tokenList.get(counter).getValue(), ";")) {
+                System.out.println("Missing semi-colon");
+            } 
+            statement();
 
         }
-        
-        
-//        statement();
-//        do{
-//            match(tokenList.get(counter).getValue(), ";");
-//            statement();
-//        }
-//        while(!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase(";"));
-
-//        temp = statement();
-//        for (int i = counter; i < tokenList.size(); i++) {
-//            if (!isDone() && match(tokenList.get(i).getValue(), ";")){
-//                temp = statement();
-//            }
-//            
-//        }
-//        return temp;
     }
 
     public boolean statement() {
@@ -108,8 +97,11 @@ public class Parser {
         } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("repeat")) {
             return repeat_stmt();
         }
-        System.out.println("Unexpected token:" + tokenList.get(counter).getValue());
-        counter++;
+        if (!isDone()){
+            System.out.println("Unexpected token:" + tokenList.get(counter).getValue());
+            counter++;
+        }
+        
         return false;
     }
 //    public boolean isOnStatementStarter(){
