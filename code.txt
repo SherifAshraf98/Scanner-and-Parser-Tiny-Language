@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 { Sample program in TINY language computes factorial}
 read x; {input an integer }
 if 0 < x then { don’t compute if x <= 0 }

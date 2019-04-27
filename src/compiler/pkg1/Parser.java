@@ -5,7 +5,11 @@
  */
 package compiler.pkg1;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,20 +18,28 @@ import java.util.ArrayList;
 public class Parser {
 
     public ArrayList<Token> tokenList;
+    public ArrayList<NodeTree> nodeList = new ArrayList<NodeTree>();
+    public ArrayList<String> foundStmts = new ArrayList<String>();
+
     public int counter = 0;
     public int readCount = 0;
     public int writeCount = 0;
     public int assignCount = 0;
     public int ifCount = 0;
     public int repeatCount = 0;
+    public boolean errorExists = false;
+    public BufferedWriter bw;
 
-    public Parser(ArrayList<Token> x) {
+    public Parser(ArrayList<Token> x, BufferedWriter bw) throws IOException {
         tokenList = x;
+        this.bw = bw;
         program();
+        printFoundStmts();
     }
-    public void increaseCounter(){
+
+    public void increaseCounter() {
         if (!isDone() && !tokenList.get(counter).getValue().equals(";") && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
-                    counter++;
+            counter++;
         }
     }
 
@@ -55,15 +67,20 @@ public class Parser {
     }
 
     public void program() {
+        foundStmts.add("program is found");
         stmt_seq();
         System.out.println("Read count: " + readCount);
         System.out.println("Write count: " + writeCount);
         System.out.println("Assignment count: " + assignCount);
         System.out.println("If count: " + ifCount);
         System.out.println("Repeat count: " + repeatCount);
+        System.out.println("Error: " + errorExists);
+        //ParseTree pt = new ParseTree(nodeList);
+        //pt.draw();
     }
 
     public void stmt_seq() {
+<<<<<<< HEAD
 //        statement();
 //        for (int i = 0; i < tokenList.size(); i++){
 //            if (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")){
@@ -83,25 +100,68 @@ public class Parser {
             statement();
 
         }
+=======
+        foundStmts.add("stmt_sequence is found");
+        statement();
+
+        while (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
+            if (match(tokenList.get(counter).getValue(), ";")) {
+                foundStmts.add(";");
+                statement();
+
+            } else {
+                foundStmts.add("Missing semi-colon --> in stmt_seq");
+                errorExists = true;
+                statement();
+            }
+
+        }
+
+//        statement();
+//        do{
+//            match(tokenList.get(counter).getValue(), ";");
+//            statement();
+//        }
+//        while(!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase(";"));
+//        temp = statement();
+//        for (int i = counter; i < tokenList.size(); i++) {
+//            if (!isDone() && match(tokenList.get(i).getValue(), ";")){
+//                temp = statement();
+//            }
+//            
+//        }
+//        return temp;
+>>>>>>> 97ef4f1ad627b9b59e997a76c17b1e1db5e26a77
     }
 
     public boolean statement() {
         if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("read")) {
+            foundStmts.add("statement is found");
             return read_stmt();
         } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("write")) {
+            foundStmts.add("statement is found");
             return write_stmt();
         } else if (!isDone() && tokenList.get(counter).getType() == TokenType.IDENTIFIER) {
+            foundStmts.add("statement is found");
             return assign_stmt();
         } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("if")) {
+            foundStmts.add("statement is found");
             return if_stmt();
         } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("repeat")) {
+            foundStmts.add("statement is found");
             return repeat_stmt();
         }
+<<<<<<< HEAD
         if (!isDone()){
             System.out.println("Unexpected token:" + tokenList.get(counter).getValue());
             counter++;
         }
         
+=======
+        foundStmts.add("Unexpected token:" + tokenList.get(counter).getValue() + " --> in stmt");
+        errorExists = true;
+        counter++;
+>>>>>>> 97ef4f1ad627b9b59e997a76c17b1e1db5e26a77
         return false;
     }
 //    public boolean isOnStatementStarter(){
@@ -120,53 +180,68 @@ public class Parser {
 //    }
 
     public boolean assign_stmt() {
+        foundStmts.add("assign-stmt is found");
         if (!isDone() && match(tokenList.get(counter).getType(), TokenType.IDENTIFIER)) {
+            foundStmts.add("identifier");
             if (!isDone() && match(tokenList.get(counter).getValue(), ":=")) {
+                foundStmts.add(":=");
                 if (exp()) {
                     assignCount++;
                     return true;
                 }
             } else {
-                System.out.println("Syntax error: Expected assignment symbol");
+                foundStmts.add("Syntax error: Expected assignment symbol --> in assign_stmt");
+                errorExists = true;
                 increaseCounter();
             }
         } else {
-            System.out.println("Syntax error: Expected identifier");
+            foundStmts.add("Syntax error: Expected identifier --> in assign_stmt");
+            errorExists = true;
             if (!tokenList.get(counter).getValue().equals(";") && !tokenList.get(counter).getValue().equals("end")) {
-            increaseCounter();
-        }
-        
+                increaseCounter();
+            }
+
         }
         return false;
     }
 
     public boolean read_stmt() {
+        foundStmts.add("read-stmt is found");
         if (!isDone() && match(tokenList.get(counter).getValue(), "read")) {
+            foundStmts.add("read is found");
             if (!isDone() && match(tokenList.get(counter).getType(), TokenType.IDENTIFIER)) {
+                foundStmts.add("identifier");
                 readCount++;
                 return true;
             } else {
-                System.out.println("Syntax error: Expected identifier");
+                foundStmts.add("Syntax error: Expected identifier --> in read_stmt");
+                errorExists = true;
                 increaseCounter();
             }
         } else {
-            System.out.println("Syntax error: Expected read");
+            foundStmts.add("Syntax error: Expected read --> in read_stmt");
+            errorExists = true;
             increaseCounter();
         }
         return false;
     }
 
     public boolean write_stmt() {
+        foundStmts.add("write-stmt is found");
         if (!isDone() && match(tokenList.get(counter).getValue(), "write")) {
+            foundStmts.add("write is found");
+
             if (exp()) {
                 writeCount++;
                 return true;
             } else {
-                System.out.println("Syntax error: expecting an expression after write statement");
+                foundStmts.add("Syntax error: expecting an expression after write statement --> in write_stmt");
+                errorExists = true;
                 increaseCounter();
             }
         } else {
-            System.out.println("Syntax error: Expected write");
+            foundStmts.add("Syntax error: Expected write --> in write_stmt");
+            errorExists = true;
             increaseCounter();
         }
         return false;
@@ -174,8 +249,10 @@ public class Parser {
 
     public boolean addop() {
         if (!isDone() && match(tokenList.get(counter).getValue(), "+")) {
+            foundStmts.add("addop is found");
             return true;
         } else if (!isDone() && match(tokenList.get(counter).getValue(), "-")) {
+            foundStmts.add("addop is found");
             return true;
         } else {
             return false;
@@ -185,6 +262,7 @@ public class Parser {
 
     public boolean mulop() {
         if (!isDone() && match(tokenList.get(counter).getValue(), "*")) {
+            foundStmts.add("mulop is found");
             return true;
         } else if (!isDone() && match(tokenList.get(counter).getValue(), "/")) {
             return true;
@@ -196,8 +274,10 @@ public class Parser {
 
     public boolean comparisonop() {
         if (!isDone() && match(tokenList.get(counter).getValue(), "<")) {
+            foundStmts.add("comparison-op is found");
             return true;
         } else if (!isDone() && match(tokenList.get(counter).getValue(), "=")) {
+            foundStmts.add("comparison-op is found");
             return true;
         } else {
             return false;
@@ -206,13 +286,15 @@ public class Parser {
     }
 
     public boolean exp() {
+        foundStmts.add("exp is found");
         boolean temp;
         temp = simple_exp();
         if (temp) {
             if (comparisonop()) {
                 temp = simple_exp();
                 if (!temp) {
-                    System.out.println("Syntax error: expecting an expression after comparison operation");
+                    foundStmts.add("Syntax error: expecting an expression after comparison operation --> in exp");
+                    errorExists = true;
                     increaseCounter();
                 }
             }
@@ -221,13 +303,15 @@ public class Parser {
     }
 
     public boolean simple_exp() {
+        foundStmts.add("simple-exp is found");
         boolean temp;
         temp = term();
         if (temp) {
             while (addop()) {
                 temp = term();
                 if (!temp) {
-                    System.out.println("Syntax error: expecting a term after add operation");
+                    foundStmts.add("Syntax error: expecting a term after add operation --> in simple_exp");
+                    errorExists = true;
                     increaseCounter();
                 }
             }
@@ -236,13 +320,15 @@ public class Parser {
     }
 
     public boolean term() {
+        foundStmts.add("term is found");
         boolean temp;
         temp = factor();
         if (temp) {
             while (mulop()) {
                 temp = factor();
                 if (!temp) {
-                    System.out.println("Syntax error: expecting a factor after mul operation");
+                    foundStmts.add("Syntax error: expecting a factor after mul operation --> in term");
+                    errorExists = true;
                     increaseCounter();
                 }
             }
@@ -251,20 +337,27 @@ public class Parser {
     }
 
     public boolean factor() {
+        foundStmts.add("factor is found");
         boolean temp;
         if (!isDone() && match(tokenList.get(counter).getValue(), "(")) {
+            foundStmts.add("(");
             if (exp() && !isDone() && match(tokenList.get(counter).getValue(), ")")) {
+                foundStmts.add(")");
                 return true;
             } else {
-                System.out.println("Syntax error: Expecting expression in balanced parenthesis");
+                foundStmts.add("Syntax error: Expecting expression in balanced parenthesis --> factor");
+                errorExists = true;
                 increaseCounter();
             }
         } else if (!isDone() && match(tokenList.get(counter).getType(), TokenType.NUMBER)) {
+            foundStmts.add("number");
             return true;
         } else if (!isDone() && match(tokenList.get(counter).getType(), TokenType.IDENTIFIER)) {
+            foundStmts.add("identifier");
             return true;
         } else {
-            System.out.println("Syntax error: Expecting ID/Number/Parenthesis");
+            foundStmts.add("Syntax error: Expecting ID/Number/Parenthesis --> in factor");
+            errorExists = true;
             increaseCounter();
             return false;
         }
@@ -273,36 +366,65 @@ public class Parser {
 
     public boolean if_stmt() {
         if (!isDone() && match(tokenList.get(counter).getValue(), "if")) {
+            foundStmts.add("if-stmt is found");
+            foundStmts.add("if");
             if (exp()) {
                 if (!isDone() && match(tokenList.get(counter).getValue(), "then")) {
+                    foundStmts.add("then");
                     stmt_seq();
-
                     if (!isDone() && match(tokenList.get(counter).getValue(), "else")) {
+                        foundStmts.add("else");
                         stmt_seq();
                         if (match(tokenList.get(counter).getValue(), "end")) {
+                            foundStmts.add("end");
                             ifCount++;
                             return true;
                         } else {
-                            System.out.println("Syntax error: missing \"end\" keyword");
+                            foundStmts.add("Syntax error: missing \"end\" keyword --> in if_stmt");
+                            errorExists = true;
                             increaseCounter();
                         }
-
                     }
-
                     if (!isDone() && match(tokenList.get(counter).getValue(), "end")) {
                         ifCount++;
                         return true;
                     } else {
-                        System.out.println("Syntax error: missing \"end\" keyword");
+                        foundStmts.add("Syntax error: missing \"end\" keyword --> if_stmt");
+                        errorExists = true;
                         increaseCounter();
                     }
-
                 } else {
-                    System.out.println("Syntax error: missing \"then\" keyword");
+                    foundStmts.add("Syntax error: missing \"then\" keyword --> if_stmt");
+                    errorExists = true;
                     increaseCounter();
                 }
             } else {
-                System.out.println("Syntax error: missing if's condition");
+                foundStmts.add("Syntax error: missing if's condition --> if_stmt");
+                errorExists = true;
+                increaseCounter();
+            }
+        }
+        return false;
+    }
+
+    public boolean repeat_stmt() {
+        if (match(tokenList.get(counter).getValue(), "repeat")) {
+            foundStmts.add("repeat-stmt is found");
+            foundStmts.add("repeat");
+            stmt_seq();
+            if (!isDone() && match(tokenList.get(counter).getValue(), "until")) {
+                foundStmts.add("until");
+                if (exp()) {
+                    repeatCount++;
+                    return true;
+                } else {
+                    foundStmts.add("Syntax error: missing repeat ending statement --> in repeat_stmt");
+                    errorExists = true;
+                    increaseCounter();
+                }
+            } else {
+                foundStmts.add("Syntax error: missing until statement --> in repeat_stmt");
+                errorExists = true;
                 increaseCounter();
             }
 
@@ -310,23 +432,13 @@ public class Parser {
         return false;
     }
 
-    public boolean repeat_stmt() {
-        if (match(tokenList.get(counter).getValue(), "repeat")) {
-            stmt_seq();
-            if (!isDone() && match(tokenList.get(counter).getValue(), "until")) {
-                if (exp()) {
-                    repeatCount++;
-                    return true;
-                } else {
-                    System.out.println("Syntax error: missing repeat ending statement");
-                    increaseCounter();
-                }
-            } else {
-                System.out.println("Syntax error: missing until statement");
-                increaseCounter();
+    public void printFoundStmts() throws IOException {
+        for (int i = 0; i < foundStmts.size(); i++) {
+            bw.write(foundStmts.get(i));
+            if ((i + 1) != foundStmts.size()) {
+                bw.newLine();
             }
-
         }
-        return false;
+        bw.close();
     }
 }
