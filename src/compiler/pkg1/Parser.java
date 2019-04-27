@@ -80,7 +80,7 @@ public class Parser {
     }
 
     public void stmt_seq() {
-<<<<<<< HEAD
+
 //        statement();
 //        for (int i = 0; i < tokenList.size(); i++){
 //            if (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")){
@@ -91,16 +91,7 @@ public class Parser {
 //            }
 //        }
 
-        statement();
 
-        while (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
-            if (!match(tokenList.get(counter).getValue(), ";")) {
-                System.out.println("Missing semi-colon");
-            } 
-            statement();
-
-        }
-=======
         foundStmts.add("stmt_sequence is found");
         statement();
 
@@ -116,22 +107,6 @@ public class Parser {
             }
 
         }
-
-//        statement();
-//        do{
-//            match(tokenList.get(counter).getValue(), ";");
-//            statement();
-//        }
-//        while(!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase(";"));
-//        temp = statement();
-//        for (int i = counter; i < tokenList.size(); i++) {
-//            if (!isDone() && match(tokenList.get(i).getValue(), ";")){
-//                temp = statement();
-//            }
-//            
-//        }
-//        return temp;
->>>>>>> 97ef4f1ad627b9b59e997a76c17b1e1db5e26a77
     }
 
     public boolean statement() {
@@ -151,17 +126,13 @@ public class Parser {
             foundStmts.add("statement is found");
             return repeat_stmt();
         }
-<<<<<<< HEAD
         if (!isDone()){
             System.out.println("Unexpected token:" + tokenList.get(counter).getValue());
             counter++;
         }
-        
-=======
         foundStmts.add("Unexpected token:" + tokenList.get(counter).getValue() + " --> in stmt");
         errorExists = true;
         counter++;
->>>>>>> 97ef4f1ad627b9b59e997a76c17b1e1db5e26a77
         return false;
     }
 //    public boolean isOnStatementStarter(){
