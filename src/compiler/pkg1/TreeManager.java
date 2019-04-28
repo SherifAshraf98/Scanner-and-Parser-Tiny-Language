@@ -15,17 +15,7 @@ import org.graphstream.graph.implementations.SingleGraph;
  * @author Sherif Ashraf
  */
 public class TreeManager {
-
-    ArrayList<Object> syntaxTree = new ArrayList<>();
-    ArrayList<Integer> index = new ArrayList<Integer>();
-    Node currentNode;
-    ArrayList<Object> currentArrayList = syntaxTree; 
     Graph g = new SingleGraph("Tree");
-
-    public TreeManager() {
-        index.add(0);
-    }
-
     public void displayTree() {
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         g.addAttribute("ui.quality");
@@ -33,106 +23,33 @@ public class TreeManager {
         g.display(true);
     }
 
-    public void addNewElement(String type, String value) {
-        String temp;
-        switch (type) {
-            case "read":
-                temp = "read (" + value + ")";
-                addToArraylist(temp);
-                addNode(temp);
-                connectNode(temp);
-                printIndex();
-                break;
-            case "write":
-                temp = "write";
-                addToArraylist(temp);
-                addNode(temp);
-                connectNode(temp);
-                addToArraylist(new ArrayList<Object>());
-                addNewElement("read", "x");
-                pop();
-                printIndex();
-                break;
+    public MyNode drawTreeFromMyNode(MyNode n1) {
+        g.addNode(n1.uniqueID);
+        Node nTemp1 = g.getNode(n1.uniqueID);
+        nTemp1.addAttribute("ui.label", n1.data);
+        nTemp1.addAttribute("ui.style", "shape:box;size:10px,30px;fill-color: white;size: 30px; text-alignment: center;");
+        if (n1.children.size() != 0) {
+            for (int i = 0; i < n1.children.size(); i++) {
+                MyNode n2 = drawTreeFromMyNode(n1.children.get(i));
+                Node nTemp2 = g.getNode(n2.uniqueID);
+                g.addEdge(n1.uniqueID + " - " + n2.uniqueID, nTemp1, nTemp2);
+            }
         }
-    }
-
-    public void addToArraylist(String s) {
-        addToSyntax(s);
-    }
-    public void addToArraylist(ArrayList<Object> o) {
-        addToSyntax(o);
-    }
-    public void addToSyntax(String s){
-        ArrayList<Object> temp = syntaxTree;
-        if (index.size() >= 2){
-        for (int i = 0; i < index.size() - 2; i++){
-            temp = (ArrayList<Object>) temp.get(i);
-            currentArrayList = temp;
-        }
-        }
-        else {
-            currentArrayList = syntaxTree;
-        }
-        index.set(index.size() - 1, index.get(index.size() - 1) + 1);
-        currentArrayList.add(s);
-    }
-    public void addToSyntax(ArrayList<Object> o){
-        ArrayList<Object> temp = syntaxTree;
-        if (index.size() >= 2){
-        for (int i = 0; i < index.size() - 2; i++){
-            temp = (ArrayList<Object>) temp.get(i);
-            currentArrayList = temp;
-        }
-        }
-        else{
-            currentArrayList = syntaxTree;
-        }
-        index.add(0);
-        printIndex();
-        currentArrayList.add(o);
-        for (int i = 0; i < index.size() - 2; i++){
-            temp = (ArrayList<Object>) temp.get(i);
-            currentArrayList = temp;
-        }
-    }
-
-    public void addNode(String s) {
-        String sTemp = generateCurrentID();
-        g.addNode(sTemp);
-        Node nTemp = g.getNode(sTemp);
-        nTemp.addAttribute("ui.label", s);
-        nTemp.addAttribute("ui.style", "shape:box;size:10px,30px;fill-color: white;size: 30px; text-alignment: center;");
+        return n1;
 
     }
 
-    public void connectNode(String s) {
-        String sTemp = generateCurrentID();
-        if (currentNode != null) {
-            g.addEdge(currentNode.getId() + sTemp, currentNode.getId(), sTemp, true);
-            currentNode = g.getNode(sTemp);
-        } else {
-            currentNode = g.getNode(sTemp);
-        }
+}
+class MyNode {
+    public String data;
+    public static int uniqueIDCounter = 0;
+    public String uniqueID = "thisisauniqueid";
+    public MyNode parent;
+    public ArrayList<MyNode> children;
+    public MyNode(String rootData) {
+        this.data = rootData;
+        this.children = new ArrayList<MyNode>();
+        this.uniqueID += uniqueIDCounter;
+        uniqueIDCounter++;
     }
-
-    public String generateCurrentID() {
-        String temp = "";
-        for (int i = 0; i < index.size(); i++) {
-            temp += index.get(i) + "-";
-        }
-        return temp;
-
-    }
-    public void printIndex(){
-        for (int i = 0; i < index.size(); i++){
-            System.out.print(index.get(i) + " ");
-        }
-        System.out.println();
-    }
-    void pop() {
-        index.remove(index.size() - 1);
-        String tempID = generateCurrentID();
-        currentNode = g.getNode(tempID);
-    }
-
 }

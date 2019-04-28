@@ -29,12 +29,18 @@ public class Parser {
     public int repeatCount = 0;
     public boolean errorExists = false;
     public BufferedWriter bw;
+    public int opCounter = 0;
+    
+    MyNode syntaxTree;
 
     public Parser(ArrayList<Token> x, BufferedWriter bw) throws IOException {
         tokenList = x;
         this.bw = bw;
-        program();
+        syntaxTree = program();
         printFoundStmts();
+    }
+    public MyNode getSyntaxTree(){
+        return syntaxTree;
     }
 
     public void increaseCounter() {
@@ -66,9 +72,9 @@ public class Parser {
         return false;
     }
 
-    public void program() {
+    public MyNode program() {
         foundStmts.add("program is found");
-        stmt_seq();
+        MyNode n = stmt_seq();
         System.out.println("Read count: " + readCount);
         System.out.println("Write count: " + writeCount);
         System.out.println("Assignment count: " + assignCount);
@@ -77,9 +83,10 @@ public class Parser {
         System.out.println("Error: " + errorExists);
         //ParseTree pt = new ParseTree(nodeList);
         //pt.draw();
+        return n;
     }
 
-    public void stmt_seq() {
+    public MyNode stmt_seq() {
 
 //        statement();
 //        for (int i = 0; i < tokenList.size(); i++){
@@ -93,12 +100,15 @@ public class Parser {
 
 
         foundStmts.add("stmt_sequence is found");
-        statement();
-
-        while (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
+        MyNode n = statement();
+        MyNode n2 = n;
+        
+        while (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until") && !tokenList.get(counter).getValue().equals("else")) {
             if (match(tokenList.get(counter).getValue(), ";")) {
                 foundStmts.add(";");
-                statement();
+                MyNode temp = statement();
+                n2.children.add(temp);
+                n2 = temp;
 
             } else {
                 foundStmts.add("Missing semi-colon --> in stmt_seq");
@@ -107,33 +117,38 @@ public class Parser {
             }
 
         }
+        return n;
     }
 
-    public boolean statement() {
+    public MyNode statement() {
         if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("read")) {
             foundStmts.add("statement is found");
             return read_stmt();
-        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("write")) {
+        }
+        else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("write")) {
             foundStmts.add("statement is found");
             return write_stmt();
-        } else if (!isDone() && tokenList.get(counter).getType() == TokenType.IDENTIFIER) {
+        } 
+        else if (!isDone() && tokenList.get(counter).getType() == TokenType.IDENTIFIER) {
             foundStmts.add("statement is found");
             return assign_stmt();
-        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("if")) {
+        } 
+        else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("if")) {
             foundStmts.add("statement is found");
             return if_stmt();
-        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("repeat")) {
+        } 
+        else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("repeat")) {
             foundStmts.add("statement is found");
             return repeat_stmt();
         }
-        if (!isDone()){
-            System.out.println("Unexpected token:" + tokenList.get(counter).getValue());
-            counter++;
-        }
-        foundStmts.add("Unexpected token:" + tokenList.get(counter).getValue() + " --> in stmt");
-        errorExists = true;
-        counter++;
-        return false;
+//        if (!isDone()){
+//            System.out.println("Unexpected token:" + tokenList.get(counter).getValue());
+//            counter++;
+//        }
+//        foundStmts.add("Unexpected token:" + tokenList.get(counter).getValue() + " --> in stmt");
+//        errorExists = true;
+//        counter++;
+        return null;
     }
 //    public boolean isOnStatementStarter(){
 //        if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("read")) {
@@ -150,15 +165,20 @@ public class Parser {
 //        return false;
 //    }
 
-    public boolean assign_stmt() {
+    public MyNode assign_stmt() {
         foundStmts.add("assign-stmt is found");
+        MyNode tempNode = null;
+        MyNode assignNode = new MyNode("assign ");
         if (!isDone() && match(tokenList.get(counter).getType(), TokenType.IDENTIFIER)) {
             foundStmts.add("identifier");
+            assignNode.data += "(" + tokenList.get(counter - 1).getValue() + ")";
             if (!isDone() && match(tokenList.get(counter).getValue(), ":=")) {
                 foundStmts.add(":=");
-                if (exp()) {
+                tempNode = exp();
+                if (tempNode != null) {
                     assignCount++;
-                    return true;
+                    assignNode.children.add(tempNode);
+                    return assignNode;
                 }
             } else {
                 foundStmts.add("Syntax error: Expected assignment symbol --> in assign_stmt");
@@ -173,17 +193,18 @@ public class Parser {
             }
 
         }
-        return false;
+        return null;
     }
 
-    public boolean read_stmt() {
+    public MyNode read_stmt() {
         foundStmts.add("read-stmt is found");
         if (!isDone() && match(tokenList.get(counter).getValue(), "read")) {
             foundStmts.add("read is found");
             if (!isDone() && match(tokenList.get(counter).getType(), TokenType.IDENTIFIER)) {
                 foundStmts.add("identifier");
                 readCount++;
-                return true;
+                MyNode n = new MyNode("read (" + tokenList.get(counter - 1).getValue() + ")");
+                return n;
             } else {
                 foundStmts.add("Syntax error: Expected identifier --> in read_stmt");
                 errorExists = true;
@@ -194,17 +215,20 @@ public class Parser {
             errorExists = true;
             increaseCounter();
         }
-        return false;
+        return null;
     }
 
-    public boolean write_stmt() {
+    public MyNode write_stmt() {
         foundStmts.add("write-stmt is found");
+        MyNode tempNode = null;
+        MyNode writeNode = new MyNode("write");
         if (!isDone() && match(tokenList.get(counter).getValue(), "write")) {
             foundStmts.add("write is found");
-
-            if (exp()) {
+            tempNode = exp();
+            if (tempNode != null) {
                 writeCount++;
-                return true;
+                writeNode.children.add(tempNode);
+                return writeNode;
             } else {
                 foundStmts.add("Syntax error: expecting an expression after write statement --> in write_stmt");
                 errorExists = true;
@@ -215,106 +239,141 @@ public class Parser {
             errorExists = true;
             increaseCounter();
         }
-        return false;
+        return null;
     }
 
-    public boolean addop() {
+    public MyNode addop() {
+        MyNode returnNode = null;
         if (!isDone() && match(tokenList.get(counter).getValue(), "+")) {
             foundStmts.add("addop is found");
-            return true;
+            returnNode = new MyNode("op (+)");
+            return returnNode;
         } else if (!isDone() && match(tokenList.get(counter).getValue(), "-")) {
             foundStmts.add("addop is found");
-            return true;
+            returnNode = new MyNode("op (-)");
+            return returnNode;
         } else {
-            return false;
+            return null;
         }
 
     }
 
-    public boolean mulop() {
+    public MyNode mulop() {
+        MyNode returnNode = null;
         if (!isDone() && match(tokenList.get(counter).getValue(), "*")) {
             foundStmts.add("mulop is found");
-            return true;
+            returnNode = new MyNode("op (*)");
+            return returnNode;
         } else if (!isDone() && match(tokenList.get(counter).getValue(), "/")) {
-            return true;
+            returnNode = new MyNode("op (/)");
+            return returnNode;
         } else {
-            return false;
+            return null;
         }
 
     }
 
-    public boolean comparisonop() {
+    public MyNode comparisonop() {
+        MyNode returnNode = null;
         if (!isDone() && match(tokenList.get(counter).getValue(), "<")) {
             foundStmts.add("comparison-op is found");
-            return true;
+            returnNode = new MyNode("op (<)");
+            return returnNode;
         } else if (!isDone() && match(tokenList.get(counter).getValue(), "=")) {
             foundStmts.add("comparison-op is found");
-            return true;
+            returnNode = new MyNode("op (=)");
+            return returnNode;
         } else {
-            return false;
+            return null;
         }
 
     }
 
-    public boolean exp() {
+    public MyNode exp() {
         foundStmts.add("exp is found");
         boolean temp;
-        temp = simple_exp();
-        if (temp) {
-            if (comparisonop()) {
-                temp = simple_exp();
-                if (!temp) {
+        MyNode n1;
+        MyNode n2;
+        MyNode n3;
+        n1 = simple_exp();
+        if (n1 != null) {
+            MyNode opNode = comparisonop();
+            if (opNode != null) {
+                n2 = n1;
+                n1 = opNode;
+                n3 = simple_exp();
+                n1.children.add(n2);
+                n1.children.add(n3);
+                if (n3 == null) {
                     foundStmts.add("Syntax error: expecting an expression after comparison operation --> in exp");
                     errorExists = true;
                     increaseCounter();
                 }
             }
         }
-        return temp;
+        return n1;
     }
 
-    public boolean simple_exp() {
+    public MyNode simple_exp() {
         foundStmts.add("simple-exp is found");
         boolean temp;
-        temp = term();
-        if (temp) {
-            while (addop()) {
-                temp = term();
-                if (!temp) {
+        MyNode n1;
+        MyNode n2;
+        MyNode n3;
+        n1 = term();
+        MyNode opNode = null;
+        if (n1 != null) {
+            while ((opNode = addop()) != null) {
+                n2 = n1;
+                n1 = opNode;
+                n3 = term();
+                n1.children.add(n2);
+                n1.children.add(n3);
+                if (n3 == null) {
                     foundStmts.add("Syntax error: expecting a term after add operation --> in simple_exp");
                     errorExists = true;
                     increaseCounter();
                 }
             }
         }
-        return temp;
+        return n1;
     }
 
-    public boolean term() {
+    public MyNode term() {
         foundStmts.add("term is found");
         boolean temp;
-        temp = factor();
-        if (temp) {
-            while (mulop()) {
-                temp = factor();
-                if (!temp) {
+        MyNode n1;
+        MyNode n2;
+        MyNode n3;
+        n1 = factor();
+        MyNode opNode = null;
+        if (n1 != null) {
+            while ((opNode = mulop()) != null) {
+                n2 = n1;
+                n1 = opNode;
+                n3 = factor();
+                n1.children.add(n2);
+                n1.children.add(n3);
+                if (n3 == null) {
                     foundStmts.add("Syntax error: expecting a factor after mul operation --> in term");
                     errorExists = true;
                     increaseCounter();
                 }
             }
         }
-        return temp;
+        return n1;
     }
 
-    public boolean factor() {
+    public MyNode factor() {
         foundStmts.add("factor is found");
+        MyNode returnNode = null;
         boolean temp;
         if (!isDone() && match(tokenList.get(counter).getValue(), "(")) {
             foundStmts.add("(");
-            if (exp() && !isDone() && match(tokenList.get(counter).getValue(), ")")) {
+            returnNode = exp();
+            if (exp() != null && !isDone() && match(tokenList.get(counter).getValue(), ")")) {
                 foundStmts.add(")");
-                return true;
+                return returnNode;
             } else {
                 foundStmts.add("Syntax error: Expecting expression in balanced parenthesis --> factor");
                 errorExists = true;
@@ -322,34 +381,43 @@ public class Parser {
             }
         } else if (!isDone() && match(tokenList.get(counter).getType(), TokenType.NUMBER)) {
             foundStmts.add("number");
-            return true;
+            returnNode = new MyNode(tokenList.get(counter - 1).getValue());
+            return returnNode;
         } else if (!isDone() && match(tokenList.get(counter).getType(), TokenType.IDENTIFIER)) {
-            foundStmts.add("identifier");
-            return true;
+            returnNode = new MyNode(tokenList.get(counter - 1).getValue());
+            return returnNode;
         } else {
             foundStmts.add("Syntax error: Expecting ID/Number/Parenthesis --> in factor");
             errorExists = true;
             increaseCounter();
-            return false;
+            return null;
         }
-        return false;
+        return null;
     }
 
-    public boolean if_stmt() {
+    public MyNode if_stmt() {
+        MyNode ifNode = new MyNode("if");
+        MyNode testNode = null;
+        MyNode thenNode = null;
+        MyNode elseNode = null;
         if (!isDone() && match(tokenList.get(counter).getValue(), "if")) {
             foundStmts.add("if-stmt is found");
             foundStmts.add("if");
-            if (exp()) {
+            testNode = exp();
+            if (testNode != null) {
+                ifNode.children.add(testNode);
                 if (!isDone() && match(tokenList.get(counter).getValue(), "then")) {
                     foundStmts.add("then");
-                    stmt_seq();
+                    thenNode = stmt_seq();
+                    ifNode.children.add(thenNode);
                     if (!isDone() && match(tokenList.get(counter).getValue(), "else")) {
                         foundStmts.add("else");
-                        stmt_seq();
+                        elseNode = stmt_seq();
+                        ifNode.children.add(elseNode);
                         if (match(tokenList.get(counter).getValue(), "end")) {
                             foundStmts.add("end");
                             ifCount++;
-                            return true;
+                            return ifNode;
                         } else {
                             foundStmts.add("Syntax error: missing \"end\" keyword --> in if_stmt");
                             errorExists = true;
@@ -358,7 +426,7 @@ public class Parser {
                     }
                     if (!isDone() && match(tokenList.get(counter).getValue(), "end")) {
                         ifCount++;
-                        return true;
+                        return ifNode;
                     } else {
                         foundStmts.add("Syntax error: missing \"end\" keyword --> if_stmt");
                         errorExists = true;
@@ -375,19 +443,25 @@ public class Parser {
                 increaseCounter();
             }
         }
-        return false;
+        return null;
     }
-
-    public boolean repeat_stmt() {
+//
+    public MyNode repeat_stmt() {
+        MyNode repeatNode = new MyNode("repeat");
+        MyNode bodyNode= null;
+        MyNode testNode = null;
         if (match(tokenList.get(counter).getValue(), "repeat")) {
             foundStmts.add("repeat-stmt is found");
             foundStmts.add("repeat");
-            stmt_seq();
+            bodyNode = stmt_seq();
+            repeatNode.children.add(bodyNode);
             if (!isDone() && match(tokenList.get(counter).getValue(), "until")) {
                 foundStmts.add("until");
-                if (exp()) {
+                testNode = exp();
+                if (testNode != null) {
+                    repeatNode.children.add(testNode);
                     repeatCount++;
-                    return true;
+                    return repeatNode;
                 } else {
                     foundStmts.add("Syntax error: missing repeat ending statement --> in repeat_stmt");
                     errorExists = true;
@@ -400,7 +474,7 @@ public class Parser {
             }
 
         }
-        return false;
+        return null;
     }
 
     public void printFoundStmts() throws IOException {

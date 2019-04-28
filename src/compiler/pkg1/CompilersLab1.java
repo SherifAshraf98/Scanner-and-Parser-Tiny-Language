@@ -39,19 +39,12 @@ public class CompilersLab1 {
         for (int i = 0; i < x.size(); i++) {
             System.out.println(x.get(i).getValue());
         }
-
         BufferedWriter bw = new BufferedWriter(new FileWriter("parser_output.txt"));
+        Parser p = new Parser(x, bw);
+        MyNode n = p.getSyntaxTree();
         TreeManager tm = new TreeManager();
-        tm.addNewElement("read", "x");  
-        tm.addNewElement("read", "y");
-        tm.addNewElement("read", "z");
-        tm.addNewElement("write", "z");
-        tm.addNewElement("write", "z");
+        tm.drawTreeFromMyNode(n);
         tm.displayTree();
-        //Parser p = new Parser(x, bw);
-//        for (int i = 0; i < p.foundStmts.size(); i++) {
-//            System.out.println(p.foundStmts.get(i));
-//        }
 
     }
 }
