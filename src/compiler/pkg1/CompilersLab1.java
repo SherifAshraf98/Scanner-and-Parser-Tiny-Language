@@ -19,19 +19,6 @@ import java.util.ArrayList;
  * @author ahmedalsai
  */
 public class CompilersLab1 {
-
-    public static ArrayList<String> reserved = new ArrayList<String>();
-    public static ArrayList<String> singleCharSpecial = new ArrayList<String>();
-    public static ArrayList<String> multipleCharSpecialsStartChar = new ArrayList<String>();
-    public static int CurrentCharASCII;
-    public static State currentState = State.START;
-    public static String rubbish = "";
-    public static int currentLine = 1;
-
-    enum State {
-        START, INNUM, INID, INASSIGN, INCOMMENT, DONE
-    }
-
     public static void main(String[] args) throws IOException {
         File file = new File("code.txt");
         FileReader fr = new FileReader(file);
@@ -43,8 +30,7 @@ public class CompilersLab1 {
         Parser p = new Parser(x, bw);
         MyNode n = p.getSyntaxTree();
         TreeManager tm = new TreeManager();
-        tm.drawTreeFromMyNode(n);
-        tm.displayTree();
+        tm.displayTree(n);
 
     }
 }

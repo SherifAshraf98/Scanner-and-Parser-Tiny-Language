@@ -1,5 +1,6 @@
 program is found
 stmt_sequence is found
+Unexpected token:123 --> in stmt
 statement is found
 read-stmt is found
 read is found

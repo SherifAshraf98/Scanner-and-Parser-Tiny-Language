@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 public class Parser {
 
     public ArrayList<Token> tokenList;
-    public ArrayList<NodeTree> nodeList = new ArrayList<NodeTree>();
     public ArrayList<String> foundStmts = new ArrayList<String>();
 
     public int counter = 0;
@@ -28,9 +27,8 @@ public class Parser {
     public int ifCount = 0;
     public int repeatCount = 0;
     public boolean errorExists = false;
+
     public BufferedWriter bw;
-    public int opCounter = 0;
-    
     MyNode syntaxTree;
 
     public Parser(ArrayList<Token> x, BufferedWriter bw) throws IOException {
@@ -38,38 +36,6 @@ public class Parser {
         this.bw = bw;
         syntaxTree = program();
         printFoundStmts();
-    }
-    public MyNode getSyntaxTree(){
-        return syntaxTree;
-    }
-
-    public void increaseCounter() {
-        if (!isDone() && !tokenList.get(counter).getValue().equals(";") && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
-            counter++;
-        }
-    }
-
-    public boolean match(String s1, String s2) {
-        if (s1.equalsIgnoreCase(s2)) {
-            counter++;
-            return true;
-        }
-        return false;
-    }
-
-    public boolean match(TokenType x, TokenType y) {
-        if (x == y) {
-            counter++;
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isDone() {
-        if (counter == tokenList.size()) {
-            return true;
-        }
-        return false;
     }
 
     public MyNode program() {
@@ -81,9 +47,7 @@ public class Parser {
         System.out.println("If count: " + ifCount);
         System.out.println("Repeat count: " + repeatCount);
         System.out.println("Error: " + errorExists);
-        //ParseTree pt = new ParseTree(nodeList);
-        //pt.draw();
-        return n;
+        return returnTree(n);
     }
 
     public MyNode stmt_seq() {
@@ -97,23 +61,30 @@ public class Parser {
 //                statement();
 //            }
 //        }
-
-
         foundStmts.add("stmt_sequence is found");
         MyNode n = statement();
+
         MyNode n2 = n;
-        
+
         while (!isDone() && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until") && !tokenList.get(counter).getValue().equals("else")) {
             if (match(tokenList.get(counter).getValue(), ";")) {
                 foundStmts.add(";");
                 MyNode temp = statement();
-                n2.children.add(temp);
-                n2 = temp;
+                if (n2 != null) {
+                    n2.sibling = temp;
+                    n2 = temp;
+                }
 
             } else {
-                foundStmts.add("Missing semi-colon --> in stmt_seq");
+                if (n2 != null) {
+                    foundStmts.add("Missing semi-colon --> in stmt_seq");
+                }
                 errorExists = true;
-                statement();
+                MyNode temp = statement();
+                if (n2 != null) {
+                    n2.sibling = temp;
+                    n2 = temp;
+                }
             }
 
         }
@@ -124,46 +95,26 @@ public class Parser {
         if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("read")) {
             foundStmts.add("statement is found");
             return read_stmt();
-        }
-        else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("write")) {
+        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("write")) {
             foundStmts.add("statement is found");
             return write_stmt();
-        } 
-        else if (!isDone() && tokenList.get(counter).getType() == TokenType.IDENTIFIER) {
+        } else if (!isDone() && tokenList.get(counter).getType() == TokenType.IDENTIFIER) {
             foundStmts.add("statement is found");
             return assign_stmt();
-        } 
-        else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("if")) {
+        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("if")) {
             foundStmts.add("statement is found");
             return if_stmt();
-        } 
-        else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("repeat")) {
+        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("repeat")) {
             foundStmts.add("statement is found");
             return repeat_stmt();
         }
-//        if (!isDone()){
-//            System.out.println("Unexpected token:" + tokenList.get(counter).getValue());
-//            counter++;
-//        }
-//        foundStmts.add("Unexpected token:" + tokenList.get(counter).getValue() + " --> in stmt");
-//        errorExists = true;
-//        counter++;
+        if (!isDone()) {
+            foundStmts.add("Unexpected token:" + tokenList.get(counter).getValue() + " --> in stmt");
+            counter++;
+        }
+
         return null;
     }
-//    public boolean isOnStatementStarter(){
-//        if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("read")) {
-//            return true;
-//        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("write")) {
-//            return true;
-//        } else if (!isDone() && tokenList.get(counter).getType() == TokenType.IDENTIFIER) {
-//            return true;
-//        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("if")) {
-//            return true;
-//        } else if (!isDone() && tokenList.get(counter).getValue().equalsIgnoreCase("repeat")) {
-//            return true;
-//        }
-//        return false;
-//    }
 
     public MyNode assign_stmt() {
         foundStmts.add("assign-stmt is found");
@@ -445,10 +396,10 @@ public class Parser {
         }
         return null;
     }
-//
+
     public MyNode repeat_stmt() {
         MyNode repeatNode = new MyNode("repeat");
-        MyNode bodyNode= null;
+        MyNode bodyNode = null;
         MyNode testNode = null;
         if (match(tokenList.get(counter).getValue(), "repeat")) {
             foundStmts.add("repeat-stmt is found");
@@ -477,6 +428,39 @@ public class Parser {
         return null;
     }
 
+    public MyNode getSyntaxTree() {
+        return syntaxTree;
+    }
+
+    public void increaseCounter() {
+        if (!isDone() && !tokenList.get(counter).getValue().equals(";") && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
+            counter++;
+        }
+    }
+
+    public boolean match(String s1, String s2) {
+        if (s1.equalsIgnoreCase(s2)) {
+            counter++;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean match(TokenType x, TokenType y) {
+        if (x == y) {
+            counter++;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isDone() {
+        if (counter == tokenList.size()) {
+            return true;
+        }
+        return false;
+    }
+
     public void printFoundStmts() throws IOException {
         for (int i = 0; i < foundStmts.size(); i++) {
             bw.write(foundStmts.get(i));
@@ -485,5 +469,12 @@ public class Parser {
             }
         }
         bw.close();
+    }
+
+    public MyNode returnTree(MyNode n) {
+        if (!errorExists) {
+            return n;
+        }
+        return null;
     }
 }
