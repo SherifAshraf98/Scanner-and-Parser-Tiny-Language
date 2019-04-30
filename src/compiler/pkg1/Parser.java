@@ -322,7 +322,7 @@ public class Parser {
         if (!isDone() && match(tokenList.get(counter).getValue(), "(")) {
             foundStmts.add("(");
             returnNode = exp();
-            if (exp() != null && !isDone() && match(tokenList.get(counter).getValue(), ")")) {
+            if (returnNode != null && !isDone() && match(tokenList.get(counter).getValue(), ")")) {
                 foundStmts.add(")");
                 return returnNode;
             } else {

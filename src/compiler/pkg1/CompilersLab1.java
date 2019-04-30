@@ -13,6 +13,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.Character.isDigit;
 import java.util.ArrayList;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.ui.view.Viewer;
 
 /**
  *
@@ -31,6 +35,8 @@ public class CompilersLab1 {
         MyNode n = p.getSyntaxTree();
         TreeManager tm = new TreeManager();
         tm.displayTree(n);
+            
 
+    
     }
 }
