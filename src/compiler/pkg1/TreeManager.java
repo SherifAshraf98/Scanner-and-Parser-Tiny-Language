@@ -31,6 +31,9 @@ public class TreeManager {
             Viewer v = g.display();
             v.disableAutoLayout();
         }
+        x = 0;
+        y = 0; 
+        z = 0;
 
     }
 
@@ -78,7 +81,6 @@ class MyNode {
     public String data;
     public static int uniqueIDCounter = 0;
     public String uniqueID = "thisisauniqueid";
-    public MyNode parent;
     public ArrayList<MyNode> children;
     public MyNode sibling;
 

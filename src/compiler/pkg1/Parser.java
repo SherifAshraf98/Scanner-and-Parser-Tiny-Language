@@ -347,12 +347,12 @@ public class Parser {
     }
 
     public MyNode if_stmt() {
+        foundStmts.add("if-stmt is found");
         MyNode ifNode = new MyNode("if");
         MyNode testNode = null;
         MyNode thenNode = null;
         MyNode elseNode = null;
         if (!isDone() && match(tokenList.get(counter).getValue(), "if")) {
-            foundStmts.add("if-stmt is found");
             foundStmts.add("if");
             testNode = exp();
             if (testNode != null) {
@@ -398,11 +398,11 @@ public class Parser {
     }
 
     public MyNode repeat_stmt() {
+        foundStmts.add("repeat-stmt is found");
         MyNode repeatNode = new MyNode("repeat");
         MyNode bodyNode = null;
         MyNode testNode = null;
         if (match(tokenList.get(counter).getValue(), "repeat")) {
-            foundStmts.add("repeat-stmt is found");
             foundStmts.add("repeat");
             bodyNode = stmt_seq();
             repeatNode.children.add(bodyNode);

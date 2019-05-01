@@ -7,16 +7,10 @@ package compiler.pkg1;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import static java.lang.Character.isDigit;
 import java.util.ArrayList;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.ui.view.Viewer;
 
 /**
  *

@@ -6,43 +6,6 @@ read is found
 identifier
 ;
 statement is found
-write-stmt is found
-write is found
-exp is found
-simple-exp is found
-term is found
-factor is found
-(
-exp is found
-simple-exp is found
-term is found
-factor is found
-number
-addop is found
-term is found
-factor is found
-number
-)
-addop is found
-term is found
-factor is found
-(
-exp is found
-simple-exp is found
-term is found
-factor is found
-number
-addop is found
-term is found
-factor is found
-number
-)
-addop is found
-term is found
-factor is found
-number
-;
-statement is found
 if-stmt is found
 if
 exp is found
