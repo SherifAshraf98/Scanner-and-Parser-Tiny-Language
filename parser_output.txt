@@ -17,6 +17,7 @@ comparison-op is found
 simple-exp is found
 term is found
 factor is found
+identifier
 then
 stmt_sequence is found
 statement is found
@@ -28,7 +29,7 @@ simple-exp is found
 term is found
 factor is found
 number
-;
+Missing semi-colon --> in stmt_seq
 statement is found
 repeat-stmt is found
 repeat
@@ -41,8 +42,10 @@ exp is found
 simple-exp is found
 term is found
 factor is found
+identifier
 mulop is found
 factor is found
+identifier
 ;
 statement is found
 assign-stmt is found
@@ -52,6 +55,7 @@ exp is found
 simple-exp is found
 term is found
 factor is found
+identifier
 addop is found
 term is found
 factor is found
@@ -61,6 +65,7 @@ exp is found
 simple-exp is found
 term is found
 factor is found
+identifier
 comparison-op is found
 simple-exp is found
 term is found
@@ -74,3 +79,5 @@ exp is found
 simple-exp is found
 term is found
 factor is found
+identifier
+end

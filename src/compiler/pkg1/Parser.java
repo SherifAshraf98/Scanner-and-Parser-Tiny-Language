@@ -242,7 +242,6 @@ public class Parser {
 
     public MyNode exp() {
         foundStmts.add("exp is found");
-        boolean temp;
         MyNode n1;
         MyNode n2;
         MyNode n3;
@@ -267,7 +266,6 @@ public class Parser {
 
     public MyNode simple_exp() {
         foundStmts.add("simple-exp is found");
-        boolean temp;
         MyNode n1;
         MyNode n2;
         MyNode n3;
@@ -292,7 +290,6 @@ public class Parser {
 
     public MyNode term() {
         foundStmts.add("term is found");
-        boolean temp;
         MyNode n1;
         MyNode n2;
         MyNode n3;
@@ -335,6 +332,7 @@ public class Parser {
             returnNode = new MyNode(tokenList.get(counter - 1).getValue());
             return returnNode;
         } else if (!isDone() && match(tokenList.get(counter).getType(), TokenType.IDENTIFIER)) {
+            foundStmts.add("identifier");
             returnNode = new MyNode(tokenList.get(counter - 1).getValue());
             return returnNode;
         } else {
@@ -376,6 +374,7 @@ public class Parser {
                         }
                     }
                     if (!isDone() && match(tokenList.get(counter).getValue(), "end")) {
+                        foundStmts.add("end");
                         ifCount++;
                         return ifNode;
                     } else {
@@ -433,7 +432,7 @@ public class Parser {
     }
 
     public void increaseCounter() {
-        if (!isDone() && !tokenList.get(counter).getValue().equals(";") && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until")) {
+        if (!isDone() && !tokenList.get(counter).getValue().equals(";") && !tokenList.get(counter).getValue().equals("end") && !tokenList.get(counter).getValue().equals("until") && !tokenList.get(counter).getValue().equals("then") && !tokenList.get(counter).getValue().equals("else")) {
             counter++;
         }
     }
@@ -464,7 +463,7 @@ public class Parser {
     public void printFoundStmts() throws IOException {
         for (int i = 0; i < foundStmts.size(); i++) {
             bw.write(foundStmts.get(i));
-            if ((i + 1) != foundStmts.size()) {
+            if (i != foundStmts.size() - 1){
                 bw.newLine();
             }
         }

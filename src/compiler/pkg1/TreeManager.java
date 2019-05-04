@@ -28,6 +28,8 @@ public class TreeManager {
             System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
             g.addAttribute("ui.quality");
             g.addAttribute("ui.antialias");
+            g.addAttribute("ui.stylesheet", "graph { fill-mode: plain; fill-color: #ecf0f1; }");;
+
             Viewer v = g.display();
             v.disableAutoLayout();
         }
@@ -46,14 +48,27 @@ public class TreeManager {
         Node nTemp1 = g.getNode(n1.uniqueID);
         nTemp1.addAttribute("ui.label", n1.data);
         if (n1.data.startsWith("read") || n1.data.startsWith("assign") || n1.data.startsWith("write") || n1.data.startsWith("if") || n1.data.startsWith("repeat")) {
-            nTemp1.addAttribute("ui.style", "shape:box;fill-color: white;stroke-mode: plain;size: 60px, 30px; text-alignment: center;text-size: 10;");
+            nTemp1.addAttribute("ui.style", "shape:box;fill-color: #607D8B;stroke-mode: plain;size: 60px, 30px; text-alignment: center;text-size: 10;text-color: white;");
 
         } else {
-            nTemp1.addAttribute("ui.style", "shape:circle;fill-color: white;stroke-mode: plain;size: 50px, 30px; text-alignment: center;text-size: 10;");
+            nTemp1.addAttribute("ui.style", "shape:circle;fill-color: #607D8B;stroke-mode: plain;size: 50px, 30px; text-alignment: center;text-size: 10;text-color: white;");
 
         }
         nTemp1.setAttribute("xyz", x, currentY, z);
         y -= 1;
+//        for (int i = 0; i < n1.children.size(); i++) {
+//            if (i == 0 && n1.children.size() != 1){
+//                x -= 1;
+//            }
+//            if (i != 0) {
+//                x += 1;
+//            }
+//            MyNode n2 = drawTreeFromMyNode(n1.children.get(i));
+//            Node nTemp2 = g.getNode(n2.uniqueID);
+//            g.addEdge(n1.uniqueID + " - " + n2.uniqueID, nTemp1, nTemp2);
+//        }
+//        x += 1;
+
         for (int i = 0; i < n1.children.size(); i++) {
             if (i != 0) {
                 x += 1;
@@ -62,6 +77,7 @@ public class TreeManager {
             Node nTemp2 = g.getNode(n2.uniqueID);
             g.addEdge(n1.uniqueID + " - " + n2.uniqueID, nTemp1, nTemp2);
         }
+        
         y = currentY;
         if (n1.sibling != null) {
 
